@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List</title>
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;400&display=swap');
+    *{
+        box-sizing: border-box;
+        height: auto;
+    }
+
+    body{
+        height:auto;
+        min-height: 100vh;
+        margin: 0;
+        background-color: #FEF1E6;
+        color: #90AACB;
+        font-family: 'Poppins',sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+    }
+
+    h1 {
+        color: #FFB085;
+        font-size: 10rem;
+        text-align: center;
+        opacity: 0.5;
+    }
+
+    form{
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        max-width: 100%;
+        width: 400px;
+    }
+    .input {
+        border: none;
+        color: #444;
+        font-size: 2rem;
+        padding: 1rem 2rem;
+        display: block;
+        width: 100%;
+    }
+    .input::placeholder{
+        color: #444;
+        text-align: center;
+    }
+
+    .input:focus{
+        outline-color: #F9D5A7;
+    }
+
+    .todos{
+        background-color: #fff;
+        padding: 0;
+        margin: 0;
+        list-style-type: none;
+    }
+    .todos li {
+        border-top: 1px solid #e5e5e5;
+        cursor: pointer;
+        font-size: 1.5rem;
+        padding: 1rem 2rem;    
+    }
+    .todos li.completed {
+        color: #ff823f;
+        text-decoration: line-through;
+    }
+    small{
+        color: #FFB085;
+        margin-top: 3rem;
+        text-align: center;
+    }   
+
+    @media screen and (max-width: 600px) {
+        h1 {
+            font-size: 3rem;
+        }
+
+    }
+    </style>
+</head>
+<body>
+    <h1>To-do'S</h1>
+    <form id="form">
+        <input type="text" class="input" id="input" placeholder="Enter your todos" autocomplete="off">
+        <ul class="todos" id="todos"></ul>
+    </form>
+    <small>left click to toggle completed <br> Right Click to delete todo</small>
+    <script>
+    const form = document.getElementById('form');
+    const input = document.getElementById('input');
+    const todosUl = document.getElementById('todos');
+
+    const todos = JSON.parse(localStorage.getItem('todos'))
+
+    if(todos) {
+        todos.forEach(todo => addTodo(todo))
+    }
+
+    form.addEventListener('submit',(e) => {
+        e.preventDefault()
+        addTodo()
+    })
+
+    function addTodo(todo){
+        let todotext = input.value
+        if(todo){
+            todotext = todo.text
+        }
+
+        if(todotext) {
+            const todoel = document.createElement('li')
+            if(todo && todo.completed) {
+                todoel.classList.add('completed')
+            }
+            todoel.innerHTML= todotext
+            todoel.addEventListener('click', () => {
+                todoel.classList.toggle('completed')
+                updateLs()
+            })
+            todoel.addEventListener('contextmenu', (e) => {
+                e.preventDefault()
+                todoel.remove()
+                updateLs()
+            })
+            todosUl.appendChild(todoel)
+            input.value=''
+            updateLs()
+        }
+    }
+
+    function updateLs(){
+        todoel = document.querySelectorAll('li')
+        const todos = []
+        todoel.forEach(todoel => {
+            todos.push({
+                text : todoel.innerHTML,
+                completed: todoel.classList.contains('completed')
+            })
+        })
+        localStorage.setItem('todos',JSON.stringify(todos))
+    }
+    </script>
+</body>
+</html>
